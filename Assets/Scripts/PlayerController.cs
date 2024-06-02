@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour
 	private bool _dashRefilling;
 	private Vector2 _lastDashDir;
 	private bool _isDashAttacking;
-
 	#endregion
 
 	#region INPUT PARAMETERS
@@ -55,6 +54,7 @@ public class PlayerController : MonoBehaviour
 	{
 		SetGravityScale(Information.gravityScale);
 		IsFacingRight = true;
+		_dashesLeft = 0;
 	}
 
 	private void Update()
@@ -138,8 +138,6 @@ public class PlayerController : MonoBehaviour
 			else
 				_lastDashDir = IsFacingRight ? Vector2.right : Vector2.left;
 
-
-
 			IsDashing = true;
 			IsJumping = false;
 			_isJumpCut = false;
@@ -193,6 +191,24 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	#region TRIGGERS/COLLISIONS
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.tag == "Orb")
+		{
+			_dashesLeft = 1;
+		}
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		if (collision.gameObject.CompareTag("Ground"))
+		{
+			_dashesLeft = 0;
+		}
+	}
+	#endregion
+
 	#region INPUT CALLBACKS
 	public void OnJumpInput()
 	{
@@ -230,7 +246,6 @@ public class PlayerController : MonoBehaviour
 	}
 	#endregion
 
-	//MOVEMENT METHODS
 	#region RUN METHODS
 	private void Run(float lerpAmount)
 	{
@@ -298,7 +313,6 @@ public class PlayerController : MonoBehaviour
 	//Dash Coroutine
 	private IEnumerator StartDash(Vector2 dir)
 	{
-
 		LastOnGroundTime = 0;
 		LastPressedDashTime = 0;
 
@@ -330,14 +344,6 @@ public class PlayerController : MonoBehaviour
 		//Dash over
 		IsDashing = false;
 	}
-
-	private IEnumerator RefillDash(int amount)
-	{
-		_dashRefilling = true;
-		yield return new WaitForSeconds(Information.dashRefillTime);
-		_dashRefilling = false;
-		_dashesLeft = Mathf.Min(Information.dashAmount, _dashesLeft + 1);
-	}
 	#endregion
 
 	#region CHECK METHODS
@@ -359,15 +365,9 @@ public class PlayerController : MonoBehaviour
 
 	private bool CanDash()
 	{
-		if (!IsDashing && _dashesLeft < Information.dashAmount && LastOnGroundTime > 0 && !_dashRefilling)
-		{
-			StartCoroutine(nameof(RefillDash), 1);
-		}
-
-		return _dashesLeft > 0;
+		return _dashesLeft > 0 && !IsDashing;
 	}
 	#endregion
-
 
 	#region EDITOR METHODS
 	private void OnDrawGizmosSelected()

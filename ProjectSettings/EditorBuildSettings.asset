@@ -6,9 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
+    path: Assets/Scenes/MenuStart.unity
     guid: 5b00a601815996a47b9c1de888116906
   - enabled: 1
-    path: Assets/Scenes/Nando.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/MenuLevel.unity
+    guid: 7c8b741a37578a049bf045720e216b84
+  - enabled: 1
+    path: Assets/Scenes/Level1.unity
+    guid: b794ba4533333c0458a1ee04ae60e2af
+  - enabled: 1
+    path: Assets/Scenes/Level2.unity
+    guid: dfe54f04b64f6fc4fb4cca52e8bbc766
+  - enabled: 1
+    path: Assets/Scenes/Level3.unity
+    guid: 7265c22641b043d4299a67d80994c298
   m_configObjects: {}

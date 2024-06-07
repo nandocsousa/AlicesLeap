@@ -15,12 +15,12 @@ MonoBehaviour:
   gravityStrength: -77.77777
   gravityScale: 7.9284167
   fallGravityMult: 1.5
-  maxFallSpeed: 25
-  runMaxSpeed: 11
-  runAcceleration: 2.5
-  runAccelAmount: 11.363636
-  runDecceleration: 5
-  runDeccelAmount: 22.727272
+  maxFallSpeed: 15
+  runMaxSpeed: 8
+  runAcceleration: 1
+  runAccelAmount: 6.25
+  runDecceleration: 3
+  runDeccelAmount: 18.75
   accelInAir: 0.65
   deccelInAir: 0.65
   doConserveMomentum: 1
@@ -35,7 +35,7 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpInputBufferTime: 0.1
   dashAmount: 1
-  dashSpeed: 20
+  dashSpeed: 15
   dashSleepTime: 0.05
   dashAttackTime: 0.15
   dashEndTime: 0.15

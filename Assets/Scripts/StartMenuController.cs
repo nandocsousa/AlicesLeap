@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuController : MonoBehaviour
+public class StartMenuController : MonoBehaviour
 {
     public void StartGame()
     {
-        SceneManager.LoadScene("Nando");
+        SceneManager.LoadScene("MenuLevel");
     }
 
     public void QuitGame()

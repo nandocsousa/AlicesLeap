@@ -204,7 +204,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (collision.gameObject.CompareTag("Ground"))
 		{
-			_dashesLeft = 0;
+			//_dashesLeft = 0;
 		}
 	}
 	#endregion

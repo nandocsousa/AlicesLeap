@@ -30,7 +30,7 @@ public class PlayerInformation : ScriptableObject
 	[Header("Jump")]
 	public float jumpHeight;
 	public float jumpTimeToApex;
-	[HideInInspector] public float jumpForce;
+	public float jumpForce;
 
 	[Header("Both Jumps")]
 	public float jumpCutGravityMult;

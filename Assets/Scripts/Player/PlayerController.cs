@@ -1,9 +1,17 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
 	public PlayerInformation Information;
+
+	#region EVENTS
+	public static event Action<int> E_PlayerDead;
+	public static event Action<int> E_UpdateCheckpoint;
+	public static event Action<int> E_ReachedEnd;
+	#endregion
 
 	#region COMPONENTS
 	public Rigidbody2D RB { get; private set; }
@@ -45,6 +53,19 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private LayerMask _groundLayer;
 	#endregion
 
+	private bool isPaused = false;
+	public int currentCheckpoint = 0;
+
+	private void OnEnable()
+	{
+		
+	}
+
+	private void OnDisable()
+	{
+		
+	}
+
 	private void Awake()
 	{
 		RB = GetComponent<Rigidbody2D>();
@@ -59,152 +80,202 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		#region TIMERS
-		LastOnGroundTime -= Time.deltaTime;
-
-		LastPressedJumpTime -= Time.deltaTime;
-		LastPressedDashTime -= Time.deltaTime;
-		#endregion
-
-		#region INPUT HANDLER
-		_moveInput.x = Input.GetAxisRaw("Horizontal");
-		_moveInput.y = Input.GetAxisRaw("Vertical");
-
-		if (_moveInput.x != 0)
-			CheckDirectionToFace(_moveInput.x > 0);
-
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (!isPaused)
 		{
-			OnJumpInput();
-		}
+			#region TIMERS
+			LastOnGroundTime -= Time.deltaTime;
 
-		if (Input.GetKeyUp(KeyCode.Space))
-		{
-			OnJumpUpInput();
-		}
+			LastPressedJumpTime -= Time.deltaTime;
+			LastPressedDashTime -= Time.deltaTime;
+			#endregion
 
-		if (Input.GetKeyDown(KeyCode.LeftShift))
-		{
-			OnDashInput();
-		}
-		#endregion
+			#region INPUT HANDLER
+			_moveInput.x = Input.GetAxisRaw("Horizontal");
+			_moveInput.y = Input.GetAxisRaw("Vertical");
 
-		#region COLLISION CHECKS
-		if (!IsDashing && !IsJumping)
-		{
-			//Ground Check
-			if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer))
+			if (_moveInput.x != 0)
+				CheckDirectionToFace(_moveInput.x > 0);
+
+			if (Input.GetKeyDown(KeyCode.Space))
 			{
-				LastOnGroundTime = Information.coyoteTime;
+				OnJumpInput();
 			}
-		}
-		#endregion
 
-		#region JUMP CHECKS
-		if (IsJumping && RB.velocity.y < 0)
-		{
-			IsJumping = false;
-
-			_isJumpFalling = true;
-		}
-
-		if (LastOnGroundTime > 0 && !IsJumping)
-		{
-			_isJumpCut = false;
-
-			_isJumpFalling = false;
-		}
-
-		if (!IsDashing)
-		{
-			//Jump
-			if (CanJump() && LastPressedJumpTime > 0)
+			if (Input.GetKeyUp(KeyCode.Space))
 			{
-				IsJumping = true;
+				OnJumpUpInput();
+			}
+
+			if (Input.GetKeyDown(KeyCode.LeftShift))
+			{
+				OnDashInput();
+			}
+			#endregion
+
+			#region COLLISION CHECKS
+			if (!IsDashing && !IsJumping)
+			{
+				//Ground Check
+				if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer))
+				{
+					LastOnGroundTime = Information.coyoteTime;
+				}
+			}
+			#endregion
+
+			#region JUMP CHECKS
+			if (IsJumping && RB.velocity.y < 0)
+			{
+				IsJumping = false;
+
+				_isJumpFalling = true;
+			}
+
+			if (LastOnGroundTime > 0 && !IsJumping)
+			{
 				_isJumpCut = false;
+
 				_isJumpFalling = false;
-				Jump();
 			}
-		}
-		#endregion
 
-		#region DASH CHECKS
-		if (CanDash() && LastPressedDashTime > 0)
-		{
-			Sleep(Information.dashSleepTime);
+			if (!IsDashing)
+			{
+				//Jump
+				if (CanJump() && LastPressedJumpTime > 0)
+				{
+					IsJumping = true;
+					_isJumpCut = false;
+					_isJumpFalling = false;
+					Jump();
+				}
+			}
+			#endregion
 
-			if (_moveInput != Vector2.zero)
-				_lastDashDir = _moveInput;
+			#region DASH CHECKS
+			if (CanDash() && LastPressedDashTime > 0)
+			{
+				Sleep(Information.dashSleepTime);
+
+				if (_moveInput != Vector2.zero)
+					_lastDashDir = _moveInput;
+				else
+					_lastDashDir = IsFacingRight ? Vector2.right : Vector2.left;
+
+				IsDashing = true;
+				IsJumping = false;
+				_isJumpCut = false;
+
+				StartCoroutine(nameof(StartDash), _lastDashDir);
+			}
+			#endregion
+
+			#region GRAVITY
+			if (!_isDashAttacking)
+			{
+				if (RB.velocity.y < 0 && _moveInput.y < 0)
+				{
+					RB.velocity = new Vector2(RB.velocity.x, Mathf.Max(RB.velocity.y, -Information.maxFallSpeed));
+				}
+				else if (_isJumpCut)
+				{
+					SetGravityScale(Information.gravityScale * Information.jumpCutGravityMult);
+					RB.velocity = new Vector2(RB.velocity.x, Mathf.Max(RB.velocity.y, -Information.maxFallSpeed));
+				}
+				else if ((IsJumping || _isJumpFalling) && Mathf.Abs(RB.velocity.y) < Information.jumpHangTimeThreshold)
+				{
+					SetGravityScale(Information.gravityScale * Information.jumpHangGravityMult);
+				}
+				else if (RB.velocity.y < 0)
+				{
+					SetGravityScale(Information.gravityScale * Information.fallGravityMult);
+					RB.velocity = new Vector2(RB.velocity.x, Mathf.Max(RB.velocity.y, -Information.maxFallSpeed));
+				}
+				else
+				{
+					SetGravityScale(Information.gravityScale);
+				}
+			}
 			else
-				_lastDashDir = IsFacingRight ? Vector2.right : Vector2.left;
-
-			IsDashing = true;
-			IsJumping = false;
-			_isJumpCut = false;
-
-			StartCoroutine(nameof(StartDash), _lastDashDir);
+			{
+				SetGravityScale(0);
+			}
+			#endregion
 		}
-		#endregion
-
-		#region GRAVITY
-		if (!_isDashAttacking)
-		{
-			if (RB.velocity.y < 0 && _moveInput.y < 0)
-			{
-				RB.velocity = new Vector2(RB.velocity.x, Mathf.Max(RB.velocity.y, -Information.maxFallSpeed));
-			}
-			else if (_isJumpCut)
-			{
-				SetGravityScale(Information.gravityScale * Information.jumpCutGravityMult);
-				RB.velocity = new Vector2(RB.velocity.x, Mathf.Max(RB.velocity.y, -Information.maxFallSpeed));
-			}
-			else if ((IsJumping || _isJumpFalling) && Mathf.Abs(RB.velocity.y) < Information.jumpHangTimeThreshold)
-			{
-				SetGravityScale(Information.gravityScale * Information.jumpHangGravityMult);
-			}
-			else if (RB.velocity.y < 0)
-			{
-				SetGravityScale(Information.gravityScale * Information.fallGravityMult);
-				RB.velocity = new Vector2(RB.velocity.x, Mathf.Max(RB.velocity.y, -Information.maxFallSpeed));
-			}
-			else
-			{
-				SetGravityScale(Information.gravityScale);
-			}
-		}
-		else
-		{
-			SetGravityScale(0);
-		}
-		#endregion
 	}
 
 	private void FixedUpdate()
 	{
-		if (!IsDashing)
+		if(!isPaused)
 		{
-			Run(1);
+			if (!IsDashing)
+			{
+				Run(1);
+			}
+			else if (_isDashAttacking)
+			{
+				Run(Information.dashEndRunLerp);
+			}
 		}
-		else if (_isDashAttacking)
+	}
+
+	private void HandleGamePaused()
+	{
+		if (isPaused)
 		{
-			Run(Information.dashEndRunLerp);
+			isPaused = false;
+		}
+		else
+		{
+			isPaused = true;
 		}
 	}
 
 	#region TRIGGERS/COLLISIONS
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (collision.tag == "Orb")
+		if(!isPaused)
 		{
-			_dashesLeft = 1;
+			if (collision.tag == "Orb")
+			{
+				_dashesLeft = 1;
+			}
+
+			if (collision.tag == "Kill")
+			{
+				E_PlayerDead?.Invoke(currentCheckpoint);
+				Destroy(gameObject);
+			}
+
+			if (collision.tag == "Checkpoint")
+			{
+				Checkpoint checkpoint = collision.GetComponent<Checkpoint>();
+				UpdateCheckpoint(checkpoint.checkpointID);
+				E_UpdateCheckpoint?.Invoke(currentCheckpoint);
+			}
+
+			if (collision.tag == "Finish")
+			{
+				Scene currentScene = SceneManager.GetActiveScene();
+				int currentLevelID = currentScene.buildIndex;
+				E_ReachedEnd?.Invoke(currentLevelID);
+			}
 		}
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
-		if (collision.gameObject.CompareTag("Ground"))
+		if (!isPaused)
 		{
-			_dashesLeft = 0;
+			if (collision.gameObject.CompareTag("Ground"))
+			{
+				_dashesLeft = 0;
+			}
+
+			if (collision.gameObject.CompareTag("Kill"))
+			{
+				E_PlayerDead?.Invoke(currentCheckpoint);
+				Destroy(gameObject);
+			}
 		}
 	}
 	#endregion
@@ -228,6 +299,18 @@ public class PlayerController : MonoBehaviour
 	#endregion
 
 	#region GENERAL METHODS
+	public void UpdateCheckpoint(int newCheckpointNumber)
+	{
+		if (newCheckpointNumber > currentCheckpoint)
+		{
+			currentCheckpoint = newCheckpointNumber;
+		}
+		else
+		{
+			Debug.Log("wtf");
+		}
+	}
+
 	public void SetGravityScale(float scale)
 	{
 		RB.gravityScale = scale;

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Orb
   - Ground
+  - Kill
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

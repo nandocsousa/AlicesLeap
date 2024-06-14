@@ -25,10 +25,4 @@ public class PlayerEvents : MonoBehaviour
 		E_PlayerSpawned?.Invoke();
 		Instantiate(player, spawnArea.position, Quaternion.identity);
 	}
-
-	//respawn at checkpoint
-	private void RespawnPlayer()
-	{
-
-	}
 }

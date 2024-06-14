@@ -23,7 +23,15 @@ public class PauseMenuController : MonoBehaviour
 		PlayerController.E_ReachedEnd -= OpenVictoryMenu;
 	}
 
-	public void OpenPauseMenu()
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P)) 
+        {
+            OpenPauseMenu();
+        }
+    }
+
+    public void OpenPauseMenu()
     {
         E_PauseGame?.Invoke();
         DisableAllMenus();

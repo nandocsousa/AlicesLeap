@@ -307,7 +307,7 @@ public class PlayerController : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log("wtf");
+			Debug.Log("checkpoint");
 		}
 	}
 

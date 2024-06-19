@@ -10,6 +10,11 @@ public class StartMenuController : MonoBehaviour
         SceneManager.LoadScene("MenuLevel");
     }
 
+    public void CreditsMenu()
+    {
+        SceneManager.LoadScene("MenuCredits");
+    }
+
     public void QuitGame()
     {
         Application.Quit();

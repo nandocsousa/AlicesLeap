@@ -27572,7 +27572,7 @@ GameObject:
   - component: {fileID: 1111997962}
   - component: {fileID: 1111997961}
   m_Layer: 0
-  m_Name: JUMPCollider
+  m_Name: JumpTextCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28973,7 +28973,7 @@ GameObject:
   - component: {fileID: 1552536538}
   - component: {fileID: 1552536537}
   m_Layer: 0
-  m_Name: ORBCollider
+  m_Name: OrbTextCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

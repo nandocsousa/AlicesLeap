@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
 	public static event Action<int> E_PlayerDead;
 	public static event Action<int> E_UpdateCheckpoint;
 	public static event Action<int> E_ReachedEnd;
+	public static event Action E_SecretCollected;
 	#endregion
 
 	#region COMPONENTS
@@ -258,6 +259,12 @@ public class PlayerController : MonoBehaviour
 				Scene currentScene = SceneManager.GetActiveScene();
 				int currentLevelID = currentScene.buildIndex;
 				E_ReachedEnd?.Invoke(currentLevelID);
+			}
+
+			if (collision.tag == "Secret")
+			{
+				E_SecretCollected?.Invoke();
+				Destroy(collision.gameObject);
 			}
 		}
 	}

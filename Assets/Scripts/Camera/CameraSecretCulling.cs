@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class CameraLayerToggle : MonoBehaviour
+public class CameraSecretCulling : MonoBehaviour
 {
 	public Camera targetCamera;
 	private string layerToToggle = "Secret";
-
+	private bool canActivate = true;
 	private int layerMask;
 
 	void Start()
@@ -15,7 +15,7 @@ public class CameraLayerToggle : MonoBehaviour
 
 	void Update()
 	{
-		if (OrbMenuManager.isDeleting || OrbMenuManager.isPlacing)
+		if (canActivate)
 		{
 			targetCamera.cullingMask &= ~layerMask;
 		}
@@ -23,5 +23,16 @@ public class CameraLayerToggle : MonoBehaviour
 		{
 			targetCamera.cullingMask |= layerMask;
 		}
+
+		if (OrbMenuManager.isDeleting || OrbMenuManager.isPlacing)
+		{
+			canActivate = true;
+		}
+		else
+		{
+			canActivate = false;
+		}
 	}
+
+
 }

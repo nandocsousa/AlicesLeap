@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 		PauseMenuController.E_PauseGame += HandleGamePaused;
 		PlayerController.E_PlayerDead += RespawnPlayer;
 		PlayerController.E_ReachedEnd += HandleLevelFinished;
+		OrbMenuManager.E_UsingOrbSpawner += HandleUsingOrbSpawner;
 	}
 
 	private void OnDisable()
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour
 		PauseMenuController.E_PauseGame -= HandleGamePaused;
 		PlayerController.E_PlayerDead -= RespawnPlayer;
 		PlayerController.E_ReachedEnd -= HandleLevelFinished;
+		OrbMenuManager.E_UsingOrbSpawner -= HandleUsingOrbSpawner;
 	}
 	void Start()
     {
@@ -59,6 +61,12 @@ public class GameManager : MonoBehaviour
 
 	private void HandleLevelFinished(int i)
 	{
+		isPaused = true;
+	}
+
+	private void HandleUsingOrbSpawner()
+	{
+		Debug.Log("AAAAAAAAAAAA");
 		isPaused = true;
 	}
 }

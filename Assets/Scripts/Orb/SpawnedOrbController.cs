@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class SpawnedOrbController : MonoBehaviour
 {
-    private bool isDragged = true;
+    private bool isPlaced = false;
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            isDragged = false;
-            Destroy(gameObject.GetComponent<SpawnedOrbController>());
+			isPlaced = true;
         }
 
-        if (isDragged)
+        if (!isPlaced)
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             gameObject.transform.position = mousePosition;
@@ -24,4 +23,12 @@ public class SpawnedOrbController : MonoBehaviour
             gameObject.transform.position = gameObject.transform.position;
         }
     }
+
+	private void OnMouseDown()
+	{
+        if (OrbMenuManager.isDeleting)
+        {
+            Destroy(gameObject);
+        }
+	}
 }

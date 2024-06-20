@@ -25,10 +25,17 @@ public class PauseMenuController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P)) 
+        /*if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P)) 
         {
-            OpenPauseMenu();
-        }
+            if (!GameManager.isPaused)
+            {
+				OpenPauseMenu();
+			}
+            else
+            {
+                ResumeGame();
+            }
+        }*/
     }
 
     public void OpenPauseMenu()
@@ -37,6 +44,12 @@ public class PauseMenuController : MonoBehaviour
         DisableAllMenus();
         pauseMenu.SetActive(true);
     }
+
+    public void ReturnToPauseMenu()
+    {
+		DisableAllMenus();
+		pauseMenu.SetActive(true);
+	}
 
     public void ResumeGame()
     {

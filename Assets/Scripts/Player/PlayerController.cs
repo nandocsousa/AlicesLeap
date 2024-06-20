@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 	public static event Action<int> E_UpdateCheckpoint;
 	public static event Action<int> E_ReachedEnd;
 	public static event Action E_SecretCollected;
+	public static event Action E_SecretTrigger;
 	#endregion
 
 	#region COMPONENTS
@@ -107,7 +108,7 @@ public class PlayerController : MonoBehaviour
 				OnJumpUpInput();
 			}
 
-			if (Input.GetKeyDown(KeyCode.LeftShift))
+			if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.L))
 			{
 				OnDashInput();
 			}
@@ -265,6 +266,11 @@ public class PlayerController : MonoBehaviour
 			{
 				E_SecretCollected?.Invoke();
 				Destroy(collision.gameObject);
+			}
+
+			if (collision.tag == "SecretTrigger")
+			{
+				E_SecretTrigger?.Invoke();
 			}
 		}
 	}

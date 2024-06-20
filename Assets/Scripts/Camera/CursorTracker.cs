@@ -17,6 +17,5 @@ public class CursorTracker : MonoBehaviour
 		cursorPosition.y = Mathf.Clamp(cursorPosition.y, minY, maxY);
 
 		transform.position = cursorPosition;
-		Debug.Log(cursorPosition);
 	}
 }

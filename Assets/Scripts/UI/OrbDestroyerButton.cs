@@ -4,11 +4,25 @@ using UnityEngine;
 
 public class OrbDestroyerButton : MonoBehaviour
 {
-	public void StartDestroyingOrbs()
+	private void Update()
+	{
+		if (Input.GetMouseButtonDown(0))
+		{
+			if (OrbMenuManager.isDeleting)
+			{
+				OrbMenuManager.isDeleting = false;
+				OrbMenuManager.UsingOrbSpawner();
+			}
+		}
+	}
+
+	public void DestroyOrb()
 	{
 		if (!OrbMenuManager.isPlacing)
 		{
-			if (OrbMenuManager.isDeleting == false)
+			OrbMenuManager.isDeleting = true;
+			OrbMenuManager.UsingOrbSpawner();
+			/*if (OrbMenuManager.isDeleting == false)
 			{
 				OrbMenuManager.isDeleting = true;
 				OrbMenuManager.UsingOrbSpawner();
@@ -17,7 +31,7 @@ public class OrbDestroyerButton : MonoBehaviour
 			{
 				OrbMenuManager.isDeleting = false;
 				OrbMenuManager.UsingOrbSpawner();
-			}
+			}*/
 		}
 	}
 }

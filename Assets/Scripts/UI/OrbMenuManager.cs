@@ -7,7 +7,7 @@ public class OrbMenuManager : MonoBehaviour
 {
     public GameObject spawnerButton, destroyerButton;
     public static event Action E_UsingOrbSpawner;
-    public static int orbAmount = 5;
+    public static int orbAmount = 30;
     public static bool isDeleting = false;
     public static bool isPlacing = false;
 

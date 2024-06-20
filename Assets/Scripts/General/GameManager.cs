@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+		Debug.Log(Time.timeScale);
 		if (isPaused)
 		{
 			Time.timeScale = 0f;
@@ -66,7 +67,13 @@ public class GameManager : MonoBehaviour
 
 	private void HandleUsingOrbSpawner()
 	{
-		Debug.Log("AAAAAAAAAAAA");
-		isPaused = true;
+		if (isPaused)
+		{
+			isPaused = false;
+		}
+		else
+		{
+			isPaused = true;
+		}
 	}
 }

@@ -9,6 +9,7 @@ TagManager:
   - Kill
   - Checkpoint
   - Secret
+  - SecretTrigger
   layers:
   - Default
   - TransparentFX
@@ -51,6 +52,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 3955694261
+    locked: 0
+  - name: SecretBlocker
+    uniqueID: 129385775
     locked: 0
   - name: Player
     uniqueID: 1233835703
